@@ -36,11 +36,11 @@ automatizadas (bots) mediante algoritmos de detección de anomalías y clasifica
 ---
 
 ## Fases del proyecto
-| Fase | Descripción | Estado |
-|------|-------------|--------|
+| Fase | Descripción | Estado     |
+|------|-------------|------------|
 | Fase 1 | Definición del problema | Completada |
 | Fase 2 | Arquitectura y modelado | Completada |
-| Fase 3 | Procesamiento y preparación de datos | En progreso |
-| Fase 4 | Análisis e Inteligencia Artificial | Pendiente |
-| Fase 5 | Integración y automatización | Pendiente |
-| Fase 6 | Escalabilidad, nube y optimización | Pendiente |
+| Fase 3 | Procesamiento y preparación de datos | Completada |
+| Fase 4 | Análisis e Inteligencia Artificial | En proceso |
+| Fase 5 | Integración y automatización | Pendiente  |
+| Fase 6 | Escalabilidad, nube y optimización | Pendiente  |
