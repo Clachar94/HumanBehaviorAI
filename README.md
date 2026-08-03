@@ -43,4 +43,4 @@ automatizadas (bots) mediante algoritmos de detección de anomalías y clasifica
 | Fase 3 | Procesamiento y preparación de datos | Completada |
 | Fase 4 | Análisis e Inteligencia Artificial | Completada |
 | Fase 5 | Integración y automatización | Completada  |
-| Fase 6 | Escalabilidad, nube y optimización | En proceso  |
+| Fase 6 | Escalabilidad, nube y optimización | Completada  |
