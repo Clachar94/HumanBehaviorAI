@@ -1,4 +1,4 @@
-# ============================================================
+## ============================================================
 # Script 03 - Procesamiento y Creación de Variables
 # Proyecto: Human Behavior AI
 # BD-141 Big Data — CUC — Cuatrimestre II 2026
@@ -112,9 +112,10 @@ def cargar_a_sqlite(df_raw, df_procesado, db='humanbehaviorai.db'):
 
 
 if __name__ == "__main__":
-    from script_01_carga import cargar_dataset
-    from script_02_limpieza import limpiar_dataset
-    df_raw    = cargar_dataset()
-    df_limpio = limpiar_dataset(df_raw)
+    import importlib
+    carga = importlib.import_module("01_carga")
+    limpieza = importlib.import_module("02_limpieza")
+    df_raw    = carga.cargar_dataset()
+    df_limpio = limpieza.limpiar_dataset(df_raw)
     df_proc   = crear_variables(df_limpio)
     cargar_a_sqlite(df_raw, df_proc)
