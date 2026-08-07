@@ -40,8 +40,8 @@ def mostrar_imagen(nombre_archivo, descripcion=""):
 
 
 tab_resumen, tab_eda, tab_modelo, tab_pipeline, tab_nube, tab_datos = st.tabs(
-    ["📌 Resumen", "📊 Análisis (Fase 3-4)", "🧠 Modelo de IA (Fase 4)",
-     "⚙️ Pipeline (Fase 5)", "☁️ Nube y Riesgos (Fase 6)", "🗂️ Explorar Dataset"]
+    ["Resumen", "Análisis (Fase 3-4)", "Modelo de IA (Fase 4)",
+     "Pipeline (Fase 5)", "Nube y Riesgos (Fase 6)", "Explorar Dataset"]
 )
 
 # ---------------------------------------------------------
@@ -60,7 +60,7 @@ with tab_resumen:
     col4.metric("Accuracy del modelo", "~49.5%")
 
     st.info(
-        "🔎 **Hallazgo central del proyecto:** el análisis exploratorio (Fase 4) "
+        " **Hallazgo central del proyecto:** el análisis exploratorio (Fase 4) "
         "demostró que ninguna variable de comportamiento disponible separa realmente "
         "cuentas bot de humanas en este dataset (correlación máxima con la etiqueta: "
         "0.0069). Dos modelos con lógicas distintas — Random Forest e Isolation Forest — "
