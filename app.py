@@ -3,200 +3,173 @@ import pandas as pd
 import os
 
 # ==========================================================
-# Human Behavior AI — Dashboard de resultados
+# Human Behavior AI — Dashboard organizado por fases
 # BD-141 Big Data — CUC — Cuatrimestre II 2026
 #
-# Este dashboard NO reentrena ningún modelo ni corre pipelines
-# en vivo. Solo muestra los resultados que los notebooks de
-# cada fase ya generaron (imágenes .png y el CSV procesado).
+# Este dashboard NO reentrena modelos ni corre pipelines en
+# vivo. Muestra los resultados que los notebooks de cada fase
+# ya generaron, organizados igual que la presentación.
 # ==========================================================
 
-st.set_page_config(
-    page_title="Human Behavior AI",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
+st.set_page_config(page_title="Human Behavior AI", layout="wide", initial_sidebar_state="collapsed")
 
 RUTA_IMAGENES = "notebooks"
 RUTA_CSV = os.path.join("data", "processed", "bot_detection_procesado.csv")
 
-st.title("🤖 Human Behavior AI")
+st.title("Human Behavior AI")
 st.subheader("Detección de Manipulación Digital y Comportamiento Artificial")
 st.caption("BD-141 Big Data · Colegio Universitario de Cartago · Profesora Ericka Valverde Navarro · II Cuatrimestre 2026")
 st.caption("Equipo: Mariana Méndez Pérez · Luis Diego Montero Vargas · Josué Redondo Gómez · Claret Rodríguez Jiménez · Nadin Rojas López")
-
 st.divider()
 
 
-def mostrar_imagen(nombre_archivo, descripcion=""):
-    """Muestra una imagen de la carpeta notebooks si existe, o un aviso si falta."""
-    ruta = os.path.join(RUTA_IMAGENES, nombre_archivo)
+def imagen(nombre, caption=""):
+    ruta = os.path.join(RUTA_IMAGENES, nombre)
     if os.path.exists(ruta):
-        st.image(ruta, use_container_width=True)
-        if descripcion:
-            st.caption(descripcion)
+        st.image(ruta, use_container_width=True, caption=caption)
     else:
-        st.warning(f"No se encontró la imagen: {nombre_archivo}")
+        st.info(f"Imagen no disponible en esta copia local: {nombre}")
 
 
-tab_resumen, tab_eda, tab_modelo, tab_pipeline, tab_nube, tab_datos = st.tabs(
-    ["Resumen", "Análisis (Fase 3-4)", "Modelo de IA (Fase 4)",
-     "Pipeline (Fase 5)", "Nube y Riesgos (Fase 6)", "Explorar Dataset"]
-)
+tabs = st.tabs([
+    "Resumen",
+    "Fase 1-2 · Problema y Arquitectura",
+    "Fase 3 · Procesamiento",
+    "Fase 4 · Análisis e IA",
+    "Fase 5 · Integración",
+    "Fase 6 · Escalabilidad",
+    "Explorar Datos",
+])
 
 # ---------------------------------------------------------
-with tab_resumen:
+with tabs[0]:
     st.header("Resumen del proyecto")
-    st.markdown("""
-    Este sistema intenta detectar si una cuenta de Twitter/X es un **bot** (cuenta
-    automatizada) o un **humano real**, analizando su comportamiento: retweets,
-    menciones, seguidores, horarios de actividad, y patrones de contenido.
-    """)
-
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Registros analizados", "50,000")
-    col2.metric("Variables procesadas", "30")
-    col3.metric("Registros integrados (Fase 5)", "53,500")
-    col4.metric("Accuracy del modelo", "~49.5%")
-
+    st.markdown(
+        "Este sistema intenta detectar si una cuenta de Twitter/X es un **bot** o un **humano real**, "
+        "analizando su comportamiento: retweets, seguidores, horarios y patrones de contenido."
+    )
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Registros analizados", "50,000")
+    c2.metric("Variables procesadas", "30")
+    c3.metric("Registros integrados (Fase 5)", "53,500")
+    c4.metric("Accuracy del modelo", "~49.5%")
     st.info(
-        " **Hallazgo central del proyecto:** el análisis exploratorio (Fase 4) "
-        "demostró que ninguna variable de comportamiento disponible separa realmente "
-        "cuentas bot de humanas en este dataset (correlación máxima con la etiqueta: "
-        "0.0069). Dos modelos con lógicas distintas — Random Forest e Isolation Forest — "
-        "llegan al mismo techo de ~50% de accuracy, equivalente al azar. Esto se explica "
-        "porque el dataset original parece estar generado de forma sintética, sin conectar "
-        "el comportamiento real con la etiqueta de bot."
+        "**Hallazgo central:** ninguna variable de comportamiento disponible separa realmente cuentas bot "
+        "de humanas en este dataset (correlación máxima con la etiqueta: 0.0069). Dos modelos con lógicas "
+        "distintas —Random Forest e Isolation Forest— llegan al mismo techo de ~50% de accuracy, equivalente "
+        "al azar. Esto se explica en detalle en la pestaña de Fase 4."
+    )
+    st.markdown("**Navegación:** cada pestaña de arriba corresponde a una fase del proyecto, en el mismo orden que la presentación.")
+
+# ---------------------------------------------------------
+with tabs[1]:
+    st.header("Fase 1-2 · El problema y la arquitectura")
+    st.markdown("""
+    **El problema:** los bots simulan ser humanos en redes sociales, manipulando métricas como likes,
+    comentarios y tendencias. Esto genera pérdidas estimadas de **$100,000 millones de dólares al año**
+    en fraude publicitario digital.
+
+    **La arquitectura propuesta**, en 5 capas:
+    """)
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("""
+        1. **Ingesta** — datasets de Kaggle + datos simulados
+        2. **Almacenamiento** — PostgreSQL (raw_events, processed_sessions)
+        3. **Procesamiento** — Python + Pandas
+        """)
+    with col2:
+        st.markdown("""
+        4. **Inteligencia Artificial** — Scikit-Learn (Random Forest + Isolation Forest)
+        5. **Visualización** — Streamlit (este dashboard)
+        """)
+    st.caption("Esta fase no genera gráficos de datos — es la etapa de definición y diseño del proyecto.")
+
+# ---------------------------------------------------------
+with tabs[2]:
+    st.header("Fase 3 · Procesamiento de datos")
+    st.markdown(
+        "Se limpiaron 8,341 valores nulos, se corrigieron formatos de fecha, y se crearon **19 variables "
+        "nuevas** a partir de las 11 originales, organizadas en 4 categorías: actividad, temporales, "
+        "contenido y riesgo. El dataset pasó de 11 a 30 columnas, con 0 valores nulos."
+    )
+    st.markdown("**Confirmación visual de que la limpieza funcionó — cero valores nulos en todas las columnas:**")
+    imagen("nulos_por_columna.png", "Revisión de valores nulos por columna, después de la limpieza")
+    st.success(
+        "Además, se ejecutaron 4 consultas SQL reales sobre la base de datos (conteo por tipo de cuenta, "
+        "engagement promedio, top 5 de sospecha, actividad de madrugada) — disponibles en el notebook Fase3.ipynb, sección 8."
     )
 
 # ---------------------------------------------------------
-with tab_eda:
-    st.header("Análisis exploratorio y hallazgos (Fase 3 y 4)")
-
+with tabs[3]:
+    st.header("Fase 4 · Análisis e Inteligencia Artificial")
+    st.markdown(
+        "Se entrenaron dos modelos para detectar bots. **Ninguno logró superar el 50% de accuracy** — "
+        "el mismo resultado que adivinar al azar."
+    )
     c1, c2 = st.columns(2)
-    with c1:
-        st.markdown("**Calidad de los datos**")
-        mostrar_imagen("nulos_por_columna.png", "Revisión de valores nulos por columna")
-    with c2:
-        st.markdown("**Balance de clases**")
-        mostrar_imagen("distribucion_clases.png", "Distribución de cuentas Bot vs Humano")
+    c1.metric("Random Forest", "49.54%", help="Modelo supervisado, 100 árboles")
+    c2.metric("Isolation Forest", "49.40%", help="Modelo no supervisado, detección de anomalías")
 
-    st.markdown("**Distribución de variables numéricas**")
-    mostrar_imagen("distribucion_variables_numericas.png")
-
-    c3, c4 = st.columns(2)
-    with c3:
-        st.markdown("**Actividad por franja horaria**")
-        mostrar_imagen("actividad_franja_horaria.png")
-    with c4:
-        st.markdown("**Engagement ratio sin outliers**")
-        mostrar_imagen("engagement_sin_outliers.png",
-                        "Al quitar valores extremos, las distribuciones de bot y humano quedan casi idénticas")
-
-    st.markdown("**Matriz de correlación**")
-    mostrar_imagen("mapa_correlacion.png",
-                    "La fila de Bot Label no muestra ninguna correlación relevante con las demás variables")
-
-# ---------------------------------------------------------
-with tab_modelo:
-    st.header("Modelo de IA preliminar (Fase 4)")
-
-    c1, c2 = st.columns(2)
-    with c1:
-        st.markdown("**Matriz de confusión — Random Forest**")
-        mostrar_imagen("matriz_confusion.png")
-    with c2:
-        st.markdown("**Matriz de confusión — Isolation Forest**")
-        mostrar_imagen("matriz_confusion_if.png")
-
-    c3, c4 = st.columns(2)
-    with c3:
-        st.markdown("**Comparación de modelos**")
-        mostrar_imagen("comparacion_modelos.png")
-    with c4:
-        st.markdown("**Importancia de variables**")
-        mostrar_imagen("importancia_variables.png")
-
+    st.markdown("**¿Por qué pasa esto? Este mapa de correlación lo muestra:**")
+    imagen("mapa_correlacion.png",
+           "La fila de 'Bot Label' aparece vacía: ninguna variable alcanza una correlación relevante con ella")
     st.warning(
-        "Ambos modelos rondan el 50% de accuracy — el mismo desempeño que adivinar al "
-        "azar. Esto no es un error de implementación: refleja la ausencia de señal real "
-        "en las variables disponibles, confirmada en el análisis exploratorio."
+        "La correlación más alta encontrada entre cualquier variable y la etiqueta de bot fue de apenas "
+        "**0.0069** — en una escala de 0 a 1, prácticamente cero. Esto confirma que el dataset no contiene "
+        "la información necesaria para distinguir bots de humanos, sin importar qué tan bueno sea el modelo."
     )
 
 # ---------------------------------------------------------
-with tab_pipeline:
-    st.header("Integración y automatización (Fase 5)")
-
-    st.markdown("**Integración de múltiples fuentes de datos**")
-    mostrar_imagen("integracion_fuentes.png",
-                    "Base histórica (Kaggle, 50,000) + Twitter simulado (2,000) + Reddit simulado (1,500) = 53,500 registros")
-
-    c1, c2 = st.columns(2)
-    with c1:
-        st.markdown("**Simulación de datos en tiempo real**")
-        mostrar_imagen("simulacion_tiempo_real.png", "5 lotes de 200 registros, procesados en menos de 0.05s cada uno")
-    with c2:
-        st.markdown("**Flujo completo del pipeline**")
-        mostrar_imagen("flujo_completo.png")
-
-    st.markdown("**Resultados del pipeline automatizado**")
-    mostrar_imagen("resultados_pipeline.png")
+with tabs[4]:
+    st.header("Fase 5 · Integración y Automatización")
+    st.markdown(
+        "Se combinaron 3 fuentes de datos (Kaggle, Twitter simulado, Reddit simulado) en un solo dataset "
+        "de **53,500 registros**, y se construyó un pipeline automatizado de 7 etapas que procesa datos "
+        "en tiempo real."
+    )
+    imagen("flujo_completo.png", "Las 7 etapas del pipeline automatizado, de principio a fin")
+    st.markdown(
+        "El pipeline es de tipo **síncrono**: cada etapa espera a que la anterior termine, ya que depende "
+        "de su resultado. Procesa lotes de 200 registros en menos de 0.05 segundos cada uno."
+    )
 
 # ---------------------------------------------------------
-with tab_nube:
-    st.header("Escalabilidad, nube y optimización (Fase 6)")
-
-    st.markdown("**Escalabilidad por tecnología**")
-    mostrar_imagen("escalabilidad.png",
-                    "Python + Pandas colapsa a partir de 50M de registros; Spark y Kafka+Spark sí escalan")
-
+with tabs[5]:
+    st.header("Fase 6 · Escalabilidad, Nube y Optimización")
+    st.markdown(
+        "Se diseñó cómo el sistema crecería en producción real, migrando a Google Cloud Platform con "
+        "Apache Spark y Kafka para manejar millones de registros."
+    )
+    imagen("escalabilidad.png",
+           "Python + Pandas (actual) colapsa a partir de 50M de registros; Spark y Kafka+Spark sí escalan")
     c1, c2 = st.columns(2)
-    with c1:
-        st.markdown("**Arquitectura propuesta en la nube (GCP)**")
-        mostrar_imagen("arquitectura_cloud.png")
-    with c2:
-        st.markdown("**Matriz de riesgos del sistema**")
-        mostrar_imagen("mapa_riesgos.png")
-
-    c3, c4 = st.columns(2)
-    with c3:
-        st.markdown("**Costos aproximados**")
-        mostrar_imagen("costos_gcp.png", "Diseño inicial: ~$559 USD/mes → Optimizado: ~$164 USD/mes")
-    with c4:
-        st.markdown("**Roadmap de optimización**")
-        mostrar_imagen("roadmap_optimizacion.png")
+    c1.metric("Costo inicial estimado", "~$559 USD/mes")
+    c2.metric("Costo optimizado", "~$164 USD/mes", delta="-70%", delta_color="normal")
+    st.caption("Optimización lograda sustituyendo Cloud Composer por Cloud Scheduler para tareas de orquestación simples.")
 
 # ---------------------------------------------------------
-with tab_datos:
+with tabs[6]:
     st.header("Explorar el dataset procesado")
-
     if os.path.exists(RUTA_CSV):
         df = pd.read_csv(RUTA_CSV)
-
         col1, col2 = st.columns(2)
         with col1:
-            filtro_bot = st.selectbox("Filtrar por tipo de cuenta", ["Todas", "Solo Bots (1)", "Solo Humanos (0)"])
+            filtro = st.selectbox("Filtrar por tipo de cuenta", ["Todas", "Solo Bots (1)", "Solo Humanos (0)"])
         with col2:
-            n_filas = st.slider("Cantidad de filas a mostrar", 10, 200, 50)
+            n_filas = st.slider("Filas a mostrar", 10, 200, 50)
 
         df_filtrado = df.copy()
-        if filtro_bot == "Solo Bots (1)":
+        if filtro == "Solo Bots (1)":
             df_filtrado = df_filtrado[df_filtrado["Bot Label"] == 1]
-        elif filtro_bot == "Solo Humanos (0)":
+        elif filtro == "Solo Humanos (0)":
             df_filtrado = df_filtrado[df_filtrado["Bot Label"] == 0]
 
         st.write(f"Mostrando {min(n_filas, len(df_filtrado))} de {len(df_filtrado):,} registros filtrados "
                  f"(dataset completo: {len(df):,} filas, {df.shape[1]} columnas)")
         st.dataframe(df_filtrado.head(n_filas), use_container_width=True)
-
-        st.markdown("**Estadísticas descriptivas**")
-        st.dataframe(df_filtrado.describe(), use_container_width=True)
     else:
-        st.error(
-            f"No se encontró el archivo en '{RUTA_CSV}'. "
-            "Corre este dashboard desde la carpeta raíz del repositorio (HumanBehaviorAI/), "
-            "no desde dentro de 'notebooks/'."
-        )
+        st.error(f"No se encontró '{RUTA_CSV}'. Corre este dashboard desde la carpeta raíz del repositorio.")
 
 st.divider()
-st.caption("Dashboard construido con Streamlit — muestra resultados generados por los notebooks de las Fases 3 a 6.")
+st.caption("Dashboard construido con Streamlit — organizado por las 6 fases del proyecto Human Behavior AI.")
